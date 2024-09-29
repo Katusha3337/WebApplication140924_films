@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фильмотека</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Популярные фильмы</h1>
+        <div id="movies" class="row"></div>
+        <nav>
+            <ul class="pagination">
+                <li class="page-item"><a class="page-link" href="#" onclick="loadMovies(1)">Previous</a></li>
+                <li class="page-item"><a class="page-link" href="#" onclick="loadMovies(1)">1</a></li>
+                <li class="page-item"><a class="page-link" href="#" onclick="loadMovies(2)">2</a></li>
+                <li class="page-item"><a class="page-link" href="#" onclick="loadMovies(3)">Next</a></li>
+            </ul>
+        </nav>
+    </div>
+    <script>
+        async function loadMovies(page = 1) {
+            try {
+                const response = await fetch(`/Movie/GetPopularMovies?page=${page}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const movies = await response.json();
+                const moviesContainer = document.getElementById('movies');
+                moviesContainer.innerHTML = '';
+                movies.results.forEach(movie => {
+                    const movieElement = document.createElement('div');
+                    movieElement.className = 'col-lg-4 col-md-6 mb-4';
+                    movieElement.innerHTML = `
+                    <div class="card h-100">
+                        <img class="card-img-top" src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}">
+                        <div class="card-body">
+                            <h4 class="card-title">${movie.title}</h4>
+                            <p class="card-text">${movie.overview}</p>
+                        </div>
+                    </div>
+                `;
+                    moviesContainer.appendChild(movieElement);
+                });
+            } catch (error) {
+                console.error('Error loading movies:', error);
+            }
+        }
+        loadMovies();
+    </script>
+</body>
+</html>
